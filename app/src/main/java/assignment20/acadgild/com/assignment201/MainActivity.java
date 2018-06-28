@@ -21,66 +21,63 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private MatrixCursor matrixCursor;
-    private SimpleCursorAdapter simpleCursorAdapter;
-    private ListView listView;
+    //initialize the textview variable
     private TextView textView;
+
+    private String success = "Adding Contract Successful";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        matrixCursor = new MatrixCursor(new String[]{"_id", "name", "phone"});
+        //Set text view
         textView = findViewById(R.id.textview);
         //create new class insertcontacttask
         InsertContactTask insertContactTask = new InsertContactTask();
         //execute the asynk task that inserts the new contact
         insertContactTask.execute();
-
     }
     //class that handles inserting the contact information
     class InsertContactTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... voids) {
-//            //create a uri that will have the data for content
-//            Uri uri = ContactsContract.Contacts.CONTENT_URI;
-//            //create new content resolver and get current resolver
-//            ContentResolver contentResolver = getContentResolver();
-//            //create new cursor that loads all the context
-//            Cursor cursor = contentResolver.query(uri, null, null, null, null, null);
-//            ContactsContract.Contacts.
-//            if (cursor != null) {
+            //create arraylist of content provider operation
                 ArrayList<ContentProviderOperation> contentProviderOperations = new ArrayList<>();
+                //get the contentprovideroperations size
                 int rawContactInsertIndex = contentProviderOperations.size();
-
+            //perform beginning operations
                 contentProviderOperations.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                         .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
                         .withValue(ContactsContract.RawContacts.ACCOUNT_NAME,null )
                         .build());
+                //Add the phone number operation
                 contentProviderOperations.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                         .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                         .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                        .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, "93X-XXXXXXXXX")
+                        .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, "540-555-55555")
                         .build());
+                //Add the display name operation
                 contentProviderOperations.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                         .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                         .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                        .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, "Dustin")
+                        .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, "Dustin44")
                         .build());
                 try {
+                    //Do the batch operations if possible
                     getContentResolver().applyBatch(ContactsContract.AUTHORITY, contentProviderOperations);
-                    textView.setText("Contact Successfully Added");
+                    //set the text to success if it was a success
+                    textView.setText(success);
+                    //catch in case it fails
                 } catch (RemoteException e) {
                     e.printStackTrace();
+                    //catch in case it fails
                 } catch (OperationApplicationException e) {
                     e.printStackTrace();
                 }
-//            }
+            //return null it is required
             return null;
         }
     }
 }
-
-
-
