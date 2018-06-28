@@ -23,13 +23,14 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     //initialize the textview variable
     private TextView textView;
-
+    //String that contains the text that it was a success if it was successful
     private String success = "Adding Contract Successful";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //set layout
         setContentView(R.layout.activity_main);
         //Set text view
         textView = findViewById(R.id.textview);
@@ -40,13 +41,13 @@ public class MainActivity extends AppCompatActivity {
     }
     //class that handles inserting the contact information
     class InsertContactTask extends AsyncTask<Void, Void, Void> {
-
+        //asynktask overriden doInBackground task
         @Override
         protected Void doInBackground(Void... voids) {
             //create arraylist of content provider operation
                 ArrayList<ContentProviderOperation> contentProviderOperations = new ArrayList<>();
                 //get the contentprovideroperations size
-                int rawContactInsertIndex = contentProviderOperations.size();
+                int insertIndex = contentProviderOperations.size();
             //perform beginning operations
                 contentProviderOperations.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                         .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
@@ -54,15 +55,15 @@ public class MainActivity extends AppCompatActivity {
                         .build());
                 //Add the phone number operation
                 contentProviderOperations.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, insertIndex)
                         .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
                         .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, "540-555-55555")
                         .build());
                 //Add the display name operation
                 contentProviderOperations.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, insertIndex)
                         .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                        .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, "Dustin44")
+                        .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, "Dustin")
                         .build());
                 try {
                     //Do the batch operations if possible
